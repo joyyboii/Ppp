@@ -1,0 +1,199 @@
+package CN;
+import java.util.Scanner;
+
+public class CRC1 {
+
+	public static void main(String[] args) {
+		Scanner scanner=new Scanner(System.in);
+		String input=scanner.nextLine();
+		int crc= 0x1D0F;
+		int polynomial=0x1021;
+		byte[] bytes=input.getBytes();
+		for(byte b :bytes) {
+			for(int i=0;i<8;i++)
+			{
+				boolean bit=((b>>(7-i)&1)==1);
+				boolean c15=((crc>>15&1)==1);
+				crc=crc<<1;
+				if(c15^bit)
+				{
+					crc=crc^polynomial;
+				}
+			}
+		}
+		crc=crc&0xffff;
+		String BinaryString=String.format("%16s",Integer.toBinaryString(crc)).replace(" ","0");
+		System.out.println("the sol is: "+BinaryString);
+	}
+
+}
+------------------------------------------------------------------------------------------------------
+package CN;
+import java.util.*;
+import java.io.*;
+
+
+public class LeakyBucket {
+
+	public static void main(String[] args) {
+		int no_of_queries,storage,space_left,output_packet,input_packet,bucket_size;
+		bucket_size=10;
+		input_packet=4;
+		output_packet=1;
+		no_of_queries=4;
+		storage=0;
+		for(int i=0;i<no_of_queries;i++)
+		{
+			space_left=bucket_size-storage;
+			if(input_packet<=space_left)
+			{
+				storage+=input_packet;
+			}
+			else {
+				System.out.println("packet loss is:"+input_packet);
+			}
+			System.out.println("buffer size:"+storage+"out of bucket size"+bucket_size);
+			storage -= output_packet;
+		}
+	}
+}
+
+------------------------------------------------------------------------------------------------------
+package CN;
+import java.math.*;
+import java.util.*;
+public class RSA {
+   public static int getGCD(int mod, int num) {
+      if (mod == 0)
+         return num;
+      else
+         // recursive function call
+         return getGCD(num % mod, mod);
+   }
+   public static void main(String args[]) {
+      int d = 0, e;      
+      int message = 32;     
+      int prime1 = 5; 
+      int prime2 = 7; 
+      int primeMul = prime1 * prime2; 
+      int primeMul1 = (prime1 - 1) * (prime2 - 1);
+      System.out.println("primeMul1 is equal to : " + primeMul1 + "\n");
+      
+      for (e = 2; e < primeMul1; e++) {
+         if (getGCD(e, primeMul1) == 1) {
+            break;
+         }
+      }
+   
+      System.out.println("Public key e is = " + e);
+      for (int m = 0; m <= 9; m++) {
+         int temp = 1 + (m * primeMul1);
+         // private key
+         if (temp % e == 0) {
+            d = temp / e;
+            break;
+         }
+      }
+      System.out.println("d is : " + d);
+      double cipher;
+      BigInteger d_message;
+      cipher = (Math.pow(message, e)) % primeMul;
+      System.out.println("Cipher text is : " + cipher);
+      BigInteger bigN = BigInteger.valueOf(primeMul);
+      BigInteger bigC = BigDecimal.valueOf(cipher).toBigInteger();
+      d_message = (bigC.pow(d)).mod(bigN);
+      System.out.println("Decrypted text is : " + d_message);
+   }
+}
+-----------------------------------------------------------------------------------------------------
+package CN;
+import java.net.*;
+public class UDPServer {
+public static void main(String[] args) throws Exception
+{
+System.out.println("Receiver");
+DatagramSocket ds = new DatagramSocket(3000);
+byte[] buffer = new byte[1024];
+while (true)
+{
+DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
+ds.receive(dp);
+String msg = new String(dp.getData(), 0, dp.getLength());
+System.out.println("Received: " + msg);
+}
+}
+}
+-------------------------------------------------------------------------------------------------------------
+package CN;
+import java.net.*;
+import java.util.Scanner;
+public class UDPClient {
+public static void main(String[] args) throws Exception
+{
+System.out.println("Sender");
+DatagramSocket ds = new DatagramSocket();
+System.out.println("Enter the message");
+Scanner scanner=new Scanner(System.in);
+while(true)
+{
+	InetAddress ip=InetAddress.getByName("127.0.0.1");
+	String msg= scanner.nextLine();
+	DatagramPacket dp=new DatagramPacket (msg.getBytes(),msg.length(),ip,3000);
+	ds.send(dp);
+}
+}
+}
+
+
+---------------------------------------------------------------------------------------------------------------
+package Belmanford;
+import java.util.Scanner;
+public class Belmanford {
+private int[] D;
+private int num_ver;
+public static final int MAX_VALUE = 999;
+public Belmanford(int num_ver) {
+this.num_ver = num_ver;
+D = new int[num_ver + 1];
+}
+public void BelmanfordEvaluation(int source, int[][] A) {
+for (int node = 1; node <= num_ver; node++) D[node] = MAX_VALUE;
+D[source] = 0;
+for (int node = 1; node <= num_ver - 1; node++) {
+for (int sn = 1; sn <= num_ver; sn++) {
+for (int dn = 1; dn <= num_ver; dn++) {
+if (A[sn][dn] != MAX_VALUE && D[dn] > D[sn] + A[sn][dn])
+D[dn] = D[sn] + A[sn][dn];
+}
+}
+}
+for (int sn = 1; sn <= num_ver; sn++) {
+for (int dn = 1; dn <= num_ver; dn++) {
+if (A[sn][dn] != MAX_VALUE && D[dn] > D[sn] + A[sn][dn])
+System.out.println("The Graph contains negative edge cycle");
+}
+}
+for (int vertex = 1; vertex <= num_ver; vertex++)
+System.out.println("Distance of source " + source + " to " + vertex + " is " + D[vertex]);
+}
+public static void main(String[] args) {
+Scanner scanner = new Scanner(System.in);
+System.out.println("Enter the number of vertices");
+int num_ver = scanner.nextInt();
+int[][] A = new int[num_ver + 1][num_ver + 1];
+System.out.println("Enter the adjacency matrix");
+for (int sn = 1; sn <= num_ver; sn++) {
+for (int dn = 1; dn <= num_ver; dn++) {
+A[sn][dn] = scanner.nextInt();
+if (sn == dn) A[sn][dn] = 0;
+if (A[sn][dn] == 0) A[sn][dn] = MAX_VALUE;
+}
+}
+System.out.println("Enter the source vertex");
+int source = scanner.nextInt();
+Belmanford b = new Belmanford(num_ver);
+b.BelmanfordEvaluation(source, A);
+scanner.close();
+}
+}
+------------------------------------------------------------------------------------------------------------------------------
